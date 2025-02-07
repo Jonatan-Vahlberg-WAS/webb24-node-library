@@ -1,41 +1,52 @@
-const { Author, Book } = require("./models")
-const { Op } = require('sequelize');
-const {Router} = require("express")
+// Importerar Sequelize-modeller för Author och Book från models-mappen
+const { Author, Book } = require("./models");
+// Importerar Sequelize-operatorer för avancerade databasfrågor
+const { Op } = require("sequelize");
+// Importerar Express och skapar en router
+const express = require("express");
+const router = express.Router();
 
-const router = Router()
-
-router.get("/authors/", async (req,res) => {
-  const q = req.query.q
-  const options = {}
-  if(q) {
+// GET-endpoint för att hämta alla författare
+// Stödjer sökning med query parameter ?q som filtrerar på författarnamn
+// Exempel: /authors?q=Anders
+router.get("/authors/", async (req, res) => {
+  const q = req.query.q;
+  const options = {};
+  if (q) {
     options.where = {
       name: {
-        [Op.iLike]: `%${q}%`
-      }
-    }
+        [Op.iLike]: `%${q}%`, // Case-insensitive sökning med wildcards
+      },
+    };
   }
-  const authors = await Author.findAll(options)
+  const authors = await Author.findAll(options);
 
-  return res.json(authors)
-})
+  return res.json(authors);
+});
 
-router.get("/books/", async (req,res) => {
-  const q = req.query.q
-  const withAuthor = req.query.withAuthor === 'true' 
-  const options = {}
-  if(q) {
+// GET-endpoint för att hämta alla böcker
+// Stödjer:
+// - sökning med ?q som filtrerar på boktitel
+// - ?withAuthor=true för att inkludera författardata i svaret
+// Exempel: /books?q=Harry&withAuthor=true
+router.get("/books/", async (req, res) => {
+  const q = req.query.q;
+  const withAuthor = req.query.withAuthor === "true";
+  const options = {};
+  if (q) {
     options.where = {
       title: {
-        [Op.iLike]: `%${q}%`
-      }
-    }
+        [Op.iLike]: `%${q}%`, // Case-insensitive sökning med wildcards
+      },
+    };
   }
-  if(withAuthor) {
-    options.include = Author
+  // Inkluderar författardata om withAuthor=true
+  if (withAuthor) {
+    options.include = Author;
   }
-  const books = await Book.findAll(options)
+  const books = await Book.findAll(options);
 
-  return res.json(books)
-})
+  return res.json(books);
+});
 
-module.exports = router
+module.exports = router;
