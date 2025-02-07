@@ -1,6 +1,7 @@
 const express = require("express")
 
 const nonOrmRouter = require("./nonOrmRouter")
+const ormRouter = require("./ormRouter")
 
 // Vår Webbserver
 const app = express();
@@ -19,7 +20,8 @@ app.get('/api/hello-world/', (req, res) => {
     })
 })
 
-app.use("/",nonOrmRouter)
+app.use("/", nonOrmRouter)
+app.use('/api/orm/', ormRouter)
 
 const port = process.env.PORT || 3000
 
