@@ -17,6 +17,34 @@ const Author = sequelize.define('author',
     }
 )
 
+const Book = sequelize.define('book', 
+    {
+        title: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        stock: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
+        },
+        author_id: {
+            type: DataTypes.INTEGER,
+            references: {
+              model: Author,
+              key: "id",
+            },
+            allowNull: false
+        }, 
+    },
+    {
+        timestamps: false
+    }
+)
+
+Author.hasMany(Book, { foreignKey: "author_id" })
+Book.belongsTo(Author, { foreignKey: "author_id" })
+
 module.exports = {
-    Author
+    Author,
+    Book
 }
