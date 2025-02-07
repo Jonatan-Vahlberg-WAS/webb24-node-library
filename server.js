@@ -21,6 +21,8 @@ pool.query("SELECT NOW()", (err, res) => {
 // Vår Webbserver
 const app = express();
 
+app.use(express.json()); // Tillåter oss att hantera inkommande JSON data
+
 //GET Anrop till /
 app.get('/',(req, res) => {
     res.send("Hello World")
@@ -43,6 +45,27 @@ app.get('/api/authors/', async (req, res) => {
   const result = await pool.query(query)
   const authors = result.rows
   res.json(authors)
+})
+
+app.post('/api/authors/', async (req, res) => {
+  console.log(req.body)
+  const name = req.body.name
+  if(!name) {
+    return res.status(400).json({
+      message: "Name is required"
+    })
+  }
+  // UNSAFE method of insert
+  if(false) {
+    const result = await pool.query(`INSERT INTO AUTHORS (name) VALUES ('${name}') RETURNING *`)
+  }
+  // SAFE method of insert
+  const result = await pool.query(
+    `INSERT INTO AUTHORS (name) VALUES ($1) RETURNING *`,
+    [name]
+  )
+  const newAuthor = result.rows?.[0]
+  res.status(201).json(newAuthor)
 })
 
 
