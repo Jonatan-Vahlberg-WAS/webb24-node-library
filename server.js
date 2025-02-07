@@ -47,6 +47,7 @@ app.get('/api/authors/', async (req, res) => {
   res.json(authors)
 })
 
+//POST anrop som skapar en author så länge namn är ifyllt
 app.post('/api/authors/', async (req, res) => {
   console.log(req.body)
   const name = req.body.name
